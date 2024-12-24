@@ -1,19 +1,15 @@
 from svg_parser import parse_svg
-from rasterizer import rasterize
-from png_writer import write_png
+from rasterizer import rasterize_svg
 
-def main(input_file, output_file, width, height):
-    print(f"Parsing SVG file: {input_file}")
-    shapes = parse_svg(input_file)
-    print(f"Shapes parsed: {shapes}")
+if __name__ == "__main__":
+    svg_path = "input.svg"
+    png_path = "output.png"
 
-    print(f"Rasterizing with width={width}, height={height}")
-    canvas = rasterize(shapes, width, height)
-    print(f"Canvas dimensions: {canvas.shape}")
+    print("[processing] Pornim parsarea fisierului SVG...")
+    width, height, elements = parse_svg(svg_path)
+    print(f"[debug] Dimensiuni SVG: {width}x{height}")
+    print(f"[debug] Elemente: {elements}")
 
-    write_png(canvas, output_file)
-    print(f"PNG file saved as: {output_file}")
-
-if __name__ == '__main__':
-    main("input.svg", "output.png", 800, 600)
-
+    print("[processing] Pornim rasterizarea PNG-ului")
+    rasterize_svg(width, height, elements, png_path)
+    print(f"[processing] Imaginea PNG a fost salvata la {png_path}")

@@ -1,7 +1,7 @@
 import xml.etree.ElementTree as ET
 
 def parse_svg(file_path):
-    print(f"[processing] Citim fisierul SVG: {file_path}")
+    print(f"[info] Citim fisierul SVG: {file_path}")
     tree = ET.parse(file_path)
     root = tree.getroot()
 
@@ -16,5 +16,5 @@ def parse_svg(file_path):
         elements.append((tag, attributes))
         print(f"[debug] Element detectat: {tag}: {attributes}" )
 
-    print("[processing] Parsarea SVG s-a termminat cu succes")
+    print("[info] Parsarea SVG s-a termminat cu succes")
     return width, height, elements

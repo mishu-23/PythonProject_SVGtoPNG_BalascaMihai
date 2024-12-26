@@ -1,19 +1,56 @@
-<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
-    <!-- Dreptunghi -->
-    <rect x="50" y="50" width="100" height="50" fill="#0000FF" />
+<!--<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">-->
+<!--    &lt;!&ndash; Dreptunghi &ndash;&gt;-->
+<!--    <rect x="50" y="50" width="100" height="50" fill="#0000FF" />-->
 
-    <!-- Cerc -->
-    <circle cx="200" cy="100" r="40" fill="#FF0000" />
+<!--    &lt;!&ndash; Cerc &ndash;&gt;-->
+<!--    <circle cx="200" cy="100" r="40" fill="#FF0000" />-->
 
-    <!-- Linie -->
-    <line x1="10" y1="10" x2="390" y2="10" stroke="#008000" stroke-width="10" />
+<!--    &lt;!&ndash; Linie &ndash;&gt;-->
+<!--    <line x1="10" y1="10" x2="390" y2="10" stroke="#008000" stroke-width="10" />-->
 
-    <!-- Elipsă -->
-    <ellipse cx="300" cy="200" rx="50" ry="30" fill="#800080" />
+<!--    &lt;!&ndash; Elipsă &ndash;&gt;-->
+<!--    <ellipse cx="300" cy="200" rx="50" ry="30" fill="#800080" />-->
 
-    <!-- Poligon -->
-    <polygon points="100,200 150,250 50,250" fill="#FFA500" />
+<!--    &lt;!&ndash; Poligon &ndash;&gt;-->
+<!--    <polygon points="100,200 150,250 50,250" fill="#FFA500" />-->
 
-    <!-- Polilinie -->
-    <polyline points="200,250 250,300 300,250" stroke="#000000" fill="none" />
+<!--    &lt;!&ndash; Polilinie &ndash;&gt;-->
+<!--    <polyline points="200,250 250,300 300,250" stroke="#000000" fill="none" />-->
+<!--</svg>-->
+
+
+<!--<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300">-->
+<!--  <path d="M10 10 L50 10 L50 50 L10 50 Z" fill="#FF5733" stroke="#33FF57" stroke-width="2" />-->
+<!--  <path d="M70 10 C90 30, 110 30, 130 10 L130 50 Z" fill="#3375FF" stroke="#FF33A1" stroke-width="2" />-->
+<!--  <path d="M150 10 L200 10 L200 50 L150 50 Z" fill="#FFAA33" stroke="#33FFAA" stroke-width="4" />-->
+<!--  <path d="M220 10 C240 30, 260 30, 280 10 L280 50 Z" fill="#AA33FF" stroke="#FF5733" stroke-width="4" />-->
+<!--</svg>-->
+
+
+
+
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <!-- M și m (Move to) -->
+  <path d="M50,50 m50,0 L150,50 L150,100 Z" fill="#ff0000" stroke="#000000" stroke-width="2" />
+
+  <!-- L și l (Line to) -->
+  <path d="M50,150 l50,50 L150,200 l-50,-50 Z" fill="#00ff00" stroke="#000000" stroke-width="2" />
+
+  <!-- H și h (Horizontal Line to) -->
+  <path d="M50,250 H150 h-50 Z" fill="#0000ff" stroke="#FFFFFF" stroke-width="2" />
+
+  <!-- V și v (Vertical Line to) -->
+  <path d="M200,50 V150 v-50 Z" fill="#ff00ff" stroke="#FFFFFF" stroke-width="2" />
+
+  <!-- C și c (Cubic Bézier curve) -->
+  <path d="M200,200 C250,150,350,150,300,200 c50,50,150,50,100,0 Z" fill="#00ffff" stroke="#000000" stroke-width="2" />
+
+  <!-- S și s (Smooth cubic Bézier curve) -->
+  <path d="M50,300 S150,250,200,300 s50,50,100,0 Z" fill="#ffff00" stroke="#000000" stroke-width="2" />
+
+  <!-- Q și q (Quadratic Bézier curve) -->
+  <path d="M250,50 Q300,100,350,50 q50,-50,100,50 Z" fill="#ffa500" stroke="#000000" stroke-width="2" />
+
+  <!-- T și t (Smooth quadratic Bézier curve) -->
+  <path d="M250,150 T350,200 t50,-50 Z" fill="#800080" stroke="#000000" stroke-width="2" />
 </svg>

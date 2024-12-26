@@ -10,10 +10,157 @@ def apply_opacity(color, opacity):
         return r, g, b, float(opacity)
     return 0, 0, 0, 1 #default e negru mat
 
+def parse_path(path_data, context):
+    import re
+    command_re = re.compile(r"([MLHVCSQTZmlhvcsqtz])|(-?[\d.]+)")
+
+    cursor = (0, 0)
+    start_point = (0, 0)
+    tokens = command_re.findall(path_data)
+    tokens = [t[0] or t[1] for t in tokens]
+    i = 0
+
+    while i < len(tokens):
+        command = tokens[i]
+        i += 1
+        if command in "Mm": #move to
+            x, y = float(tokens[i]), float(tokens[i + 1])
+            i += 2
+            if command == "m":
+                x += cursor[0]
+                y += cursor[1]
+            cursor = (x, y)
+            start_point = cursor
+            context.move_to(x, y)
+
+        elif command in "Ll": #Line to
+            x, y = float(tokens[i]), float(tokens[i + 1])
+            i += 2
+            if command == "l":
+                x += cursor[0]
+                y += cursor[1]
+            cursor = (x, y)
+            context.line_to(x, y)
+
+        elif command in "Cc": #cubic bezier curve
+            x1, y1 = float(tokens[i]), float(tokens[i + 1])
+            x2, y2 = float(tokens[i+2]), float(tokens[i + 3])
+            x, y = float(tokens[i+4]), float(tokens[i + 5])
+            i += 6
+            if command == "c":
+                x1 += cursor[0]
+                y1 += cursor[1]
+                x2 += cursor[0]
+                y2 += cursor[1]
+                x += cursor[0]
+                y += cursor[1]
+            cursor = (x, y)
+            context.curve_to(x1, y1, x2, y2, x, y)
+
+        elif command in "Zz": #close path
+            context.close_path()
+            cursor = start_point
+
+        elif command in "Hh":  # Horizontal line to
+            x = float(tokens[i])
+            i += 1
+
+            if command == "h":  # Ajustam coordonata pentru mod relativ
+                x += cursor[0]
+
+            # Desenam linia
+            context.line_to(x, cursor[1])
+
+            # Actualizam cursorul
+            cursor = (x, cursor[1])
+
+        elif command in "Vv":  # Vertical line to
+            y = float(tokens[i])
+            i += 1
+
+            if command == "v":  # Ajustam coordonata pentru mod relativ
+                y += cursor[1]
+
+            # Desenam linia
+            context.line_to(cursor[0], y)
+
+            # Actualizam cursorul
+            cursor = (cursor[0], y)
+
+        elif command in "Ss":  # Smooth cubic Bezier curve
+            x2, y2 = float(tokens[i]), float(tokens[i + 1])
+            x, y = float(tokens[i + 2]), float(tokens[i + 3])
+            i += 4
+
+            # Determinam punctul de control ca simetric fata de ultimul punct de control sau cursor
+            if "control_point" in locals():  # Daca exista un punct de control anterior
+                x1 = 2 * cursor[0] - control_point[0]
+                y1 = 2 * cursor[1] - control_point[1]
+
+            else:  # Daca nu exista un punct de control anterior
+                x1, y1 = cursor
+
+            if command == "s":  # Ajustam coordonatele pentru mod relativ
+                x2 += cursor[0]
+                y2 += cursor[1]
+                x += cursor[0]
+                y += cursor[1]
+
+            # Actualizam punctele de control si cursorul
+            control_point = (x2, y2)  # Salvam punctul de control actual
+            cursor = (x, y)
+
+            # Desenam curba
+            context.curve_to(x1, y1, x2, y2, x, y)
+
+        elif command in "Qq":  # Quadratic Bezier curve
+            x1, y1 = float(tokens[i]), float(tokens[i + 1])
+            x, y = float(tokens[i + 2]), float(tokens[i + 3])
+            i += 4
+
+            if command == "q":  # Ajustam coordonatele pentru mod relativ
+                x1 += cursor[0]
+                y1 += cursor[1]
+                x += cursor[0]
+                y += cursor[1]
+
+            # Desenam curba
+            context.curve_to(x1, y1, x, y, x, y)
+
+            # Actualizam punctele de control si cursorul
+            quadratic_control_point = (x1, y1)
+            cursor = (x, y)
+
+        elif command in "Tt":  # Smooth quadratic Bezier curve
+            x, y = float(tokens[i]), float(tokens[i + 1])
+            i += 2
+
+            # Determinam punctul de control
+            if "quadratic_control_point" in locals():  # Daca exista un punct de control anterior
+                x1 = 2 * cursor[0] - quadratic_control_point[0]
+                y1 = 2 * cursor[1] - quadratic_control_point[1]
+
+            else:  # Daca nu exista un punct de control anterior
+                x1, y1 = cursor
+
+            if command == "t":  # Ajustam coordonatele pentru mod relativ
+                x += cursor[0]
+                y += cursor[1]
+
+            # Desenam curba
+            context.curve_to(x1, y1, x, y, x, y)
+
+            # Actualizam punctele de control si cursorul
+            quadratic_control_point = (x1, y1)
+            cursor = (x, y)
+
+        else:
+            raise ValueError(f"Unknown command: {command}")
+
 def rasterize_svg(width, height, elements, png_path):
     print(f"[info] Cream un canvas de dimensiuni: {width}x{height}")
 
-    # Creăm un canvas folosind cairo
+    # Cream un canvas folosind cairo
     surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
     context = cairo.Context(surface)
 
@@ -80,7 +227,7 @@ def rasterize_svg(width, height, elements, png_path):
             context.stroke()
 
         elif tag == "ellipse":
-            print(f"[info] Rasterizam o elipsă cu atribute: {attributes}")
+            print(f"[info] Rasterizam o elipsa cu atribute: {attributes}")
             cx = float(attributes["cx"])
             cy = float(attributes["cy"])
             rx = float(attributes["rx"])
@@ -102,6 +249,7 @@ def rasterize_svg(width, height, elements, png_path):
                 r, g, b, a = apply_opacity(stroke, opacity)
                 context.set_source_rgba(r, g, b, a)
                 context.set_line_width(stroke_width)
+                context.arc(0, 0, 1, 0, 2 * 3.14159)
                 context.stroke()
 
         elif tag == "polygon":
@@ -111,10 +259,11 @@ def rasterize_svg(width, height, elements, png_path):
             opacity = float(attributes.get("fill-opacity", attributes.get("opacity", 1)))
             r, g, b, a = apply_opacity(fill, opacity)
             context.set_source_rgba(r, g, b, a)
-
             context.move_to(*points[0])
+
             for point in points[1:]:
                 context.line_to(*point)
+
             context.close_path()
             context.fill()
 
@@ -135,13 +284,41 @@ def rasterize_svg(width, height, elements, png_path):
             r, g, b, a = apply_opacity(stroke, opacity)
             context.set_source_rgba(r, g, b, a)
             context.set_line_width(stroke_width)
-
             context.move_to(*points[0])
+
             for point in points[1:]:
                 context.line_to(*point)
+
             context.stroke()
 
-    # Salvăm imaginea
-    print(f"[info] Salvam imaginea PNG la: {png_path}")
-    surface.write_to_png(png_path)
-    print("[info] Rasterizarea s-a terminat cu succes.")
+        elif tag == "path":
+            print(f"[info] Rasterizam un path cu atribute: {attributes}")
+            path_data = attributes.get("d", "")
+            fill = attributes.get("fill", "#000000")
+            print(f"[debug] fill: {fill}")
+            opacity = float(attributes.get("fill-opacity", attributes.get("opacity", 1)))
+            stroke = attributes.get("stroke", None)
+            stroke_width = float(attributes.get("stroke-width", 1))
+
+            # Convertim datele din atributul "d" intr-o cale Cairo
+            parse_path(path_data, context)
+            path_copy = context.copy_path()
+
+            # Aplicam fill
+            r, g, b, a = apply_opacity(fill, opacity)
+            print(f"[debug] rgba: {r}, {g}, {b}, {a}")
+            context.set_source_rgba(r, g, b, a)
+            context.fill()
+
+            # Aplicam stroke (daca exista)
+            if stroke:
+                context.append_path(path_copy)
+                r, g, b, a = apply_opacity(stroke, opacity)
+                context.set_source_rgba(r, g, b, a)
+                context.set_line_width(stroke_width)
+                context.stroke()
+
+        # Salvam imaginea
+        print(f"[info] Salvam imaginea PNG la: {png_path}")
+        surface.write_to_png(png_path)
+        print("[info] Rasterizarea s-a terminat cu succes.")

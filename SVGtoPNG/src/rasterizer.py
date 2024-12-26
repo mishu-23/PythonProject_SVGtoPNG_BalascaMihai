@@ -1,8 +1,18 @@
 import cairo
-from png_writer import create_image
-from PIL import ImageDraw
+# from png_writer import create_image
+# from PIL import ImageDraw
 
 def apply_opacity(color, opacity):
+    """
+    Aplica opacitatea unui culoare hexadecimale si returneaza valorile RGBA.
+
+    Args:
+        color (str): Culoarea in format hexadecimale (#RRGGBB).
+        opacity (float): Valoarea opacitatii (0 - complet transparent, 1 - complet opac).
+
+    Returns:
+        tuple: Tuple cu valorile RGBA normalizate in intervalul [0, 1].
+    """
     if color.startswith('#'):
         r = int(color[1:3], 16) / 255.0
         g = int(color[3:5], 16) / 255.0
@@ -11,6 +21,13 @@ def apply_opacity(color, opacity):
     return 0, 0, 0, 1 #default e negru mat
 
 def parse_path(path_data, context):
+    """
+    Parseaza datele unui path SVG si le deseneaza folosind contextul Cairo.
+
+    Args:
+        path_data (str): Datele path-ului in format SVG.
+        context (cairo.Context): Contextul Cairo pentru desenare.
+    """
     import re
     command_re = re.compile(r"([MLHVCSQTZmlhvcsqtz])|(-?[\d.]+)")
 
@@ -158,6 +175,15 @@ def parse_path(path_data, context):
             raise ValueError(f"Unknown command: {command}")
 
 def rasterize_svg(width, height, elements, png_path):
+    """
+    Creaza o imagine PNG dintr-un SVG si o salveaza la calea specificata.
+
+    Args:
+        width (int): Latimea imaginii in pixeli.
+        height (int): Inaltimea imaginii in pixeli.
+        elements (list): Lista de elemente SVG (ex. rect, circle, path, etc.).
+        png_path (str): Calea la care va fi salvata imaginea PNG.
+    """
     print(f"[info] Cream un canvas de dimensiuni: {width}x{height}")
 
     # Cream un canvas folosind cairo

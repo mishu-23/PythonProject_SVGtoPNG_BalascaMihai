@@ -12,12 +12,12 @@ def main():
     svg_path = args.svg_path
 
     if not os.path.isfile(svg_path):
-        print(f"[error] Fisierul SVG '{svg_path}' nu a fost găsit.")
+        print(f"[error] Fisierul SVG '{svg_path}' nu a fost gasit.")
         return
 
     png_path = os.path.splitext(svg_path)[0] + ".png"
 
-    print("[info] Pornim parsarea fișierului SVG...")
+    print("[info] Pornim parsarea fisierului SVG...")
     width, height, elements = parse_svg(svg_path)
     print(f"[debug] Dimensiuni SVG: {width}x{height}")
     print(f"[debug] Elemente: {elements}")

@@ -1,6 +1,17 @@
 import xml.etree.ElementTree as ET
 
 def parse_svg(file_path):
+    """
+    Parseaaza un fisier SVG si extrage dimensiunile si elementele sale.
+
+    Parametri:
+    - file_path (str): calea catre fisierul SVG.
+
+    Returneaza:
+    - width (int): latimea imaginii.
+    - height (int): inaltimea imaginii.
+    - elements (list): lista de elemente (tag, atribute) gasite in SVG.
+    """
     print(f"[info] Citim fisierul SVG: {file_path}")
     tree = ET.parse(file_path)
     root = tree.getroot()

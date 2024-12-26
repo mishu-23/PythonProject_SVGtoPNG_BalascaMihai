@@ -304,13 +304,11 @@ def rasterize_svg(width, height, elements, png_path):
             parse_path(path_data, context)
             path_copy = context.copy_path()
 
-            # Aplicam fill
             r, g, b, a = apply_opacity(fill, opacity)
             print(f"[debug] rgba: {r}, {g}, {b}, {a}")
             context.set_source_rgba(r, g, b, a)
             context.fill()
 
-            # Aplicam stroke (daca exista)
             if stroke:
                 context.append_path(path_copy)
                 r, g, b, a = apply_opacity(stroke, opacity)

@@ -4,7 +4,7 @@ import cairo
 
 def apply_opacity(color, opacity):
     """
-    Aplica opacitatea unui culoare hexadecimale si returneaza valorile RGBA.
+    Aplica opacitatea unei culori hexadecimale si returneaza valorile RGBA.
 
     Args:
         color (str): Culoarea in format hexadecimale (#RRGGBB).
@@ -29,12 +29,12 @@ def parse_path(path_data, context):
         context (cairo.Context): Contextul Cairo pentru desenare.
     """
     import re
-    command_re = re.compile(r"([MLHVCSQTZmlhvcsqtz])|(-?[\d.]+)")
+    command_re = re.compile(r"([MLHVCSQTZmlhvcsqtz])|(-?[\d.]+)") #identifica  comenzi svg din atributul de path (+ coordonate si ce mai are)
 
     cursor = (0, 0)
     start_point = (0, 0)
     tokens = command_re.findall(path_data)
-    tokens = [t[0] or t[1] for t in tokens]
+    tokens = [t[0] or t[1] for t in tokens] #eliminam spatiile din tokens
     i = 0
 
     while i < len(tokens):
@@ -43,7 +43,7 @@ def parse_path(path_data, context):
         if command in "Mm": #move to
             x, y = float(tokens[i]), float(tokens[i + 1])
             i += 2
-            if command == "m":
+            if command == "m": #relativ la cursorul anterior
                 x += cursor[0]
                 y += cursor[1]
             cursor = (x, y)
@@ -82,26 +82,20 @@ def parse_path(path_data, context):
             x = float(tokens[i])
             i += 1
 
-            if command == "h":  # Ajustam coordonata pentru mod relativ
+            if command == "h":
                 x += cursor[0]
 
-            # Desenam linia
             context.line_to(x, cursor[1])
-
-            # Actualizam cursorul
             cursor = (x, cursor[1])
 
         elif command in "Vv":  # Vertical line to
             y = float(tokens[i])
             i += 1
 
-            if command == "v":  # Ajustam coordonata pentru mod relativ
+            if command == "v":
                 y += cursor[1]
 
-            # Desenam linia
             context.line_to(cursor[0], y)
-
-            # Actualizam cursorul
             cursor = (cursor[0], y)
 
         elif command in "Ss":  # Smooth cubic Bezier curve
